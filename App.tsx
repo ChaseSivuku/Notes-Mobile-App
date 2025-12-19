@@ -8,7 +8,7 @@ function RootNavigator(): React.ReactElement | null {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return null; // You can add a loading screen here
+    return null;
   }
 
   return (

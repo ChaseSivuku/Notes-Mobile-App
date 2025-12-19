@@ -48,7 +48,7 @@ export const authService = {
       const newUser: UserWithPassword = {
         id: Date.now().toString(),
         email,
-        password, // In production, this should be hashed
+        password,
         username,
         createdAt: new Date().toISOString(),
       };
@@ -108,7 +108,7 @@ export const authService = {
       users[userIndex].email = email;
       users[userIndex].username = username;
       if (password && password.trim() !== '') {
-        users[userIndex].password = password; // In production, this should be hashed
+        users[userIndex].password = password;
       }
 
       await this.saveUsers(users);
