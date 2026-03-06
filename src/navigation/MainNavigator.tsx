@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import WorkNotesScreen from '../screens/notes/WorkNotesScreen';
 import StudyNotesScreen from '../screens/notes/StudyNotesScreen';
@@ -43,6 +44,7 @@ function NotesStack() {
 }
 
 function NotesTabs() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -63,6 +65,10 @@ function NotesTabs() {
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          paddingBottom: Math.max(insets.bottom, 8),
+          height: 56 + Math.max(insets.bottom, 8),
+        },
         headerStyle: {
           backgroundColor: colors.primary,
         },

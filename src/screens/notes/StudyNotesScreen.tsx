@@ -8,12 +8,14 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../../context/AuthContext';
 import { notesService } from '../../services/notesService';
 import NoteCard from '../../components/NoteCard';
 import { colors } from '../../constants/colors';
+import { horizontalPadding, listBottomPadding, fabSize, fabOffset } from '../../constants/layout';
 import { Ionicons } from '@expo/vector-icons';
 import { MainStackParamList, Note } from '../../types';
 
@@ -24,6 +26,7 @@ interface StudyNotesScreenProps {
 }
 
 export default function StudyNotesScreen({ navigation }: StudyNotesScreenProps) {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
@@ -90,9 +93,13 @@ export default function StudyNotesScreen({ navigation }: StudyNotesScreenProps) 
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
+  const listPaddingBottom = listBottomPadding + insets.bottom;
+  const fabBottom = fabOffset + insets.bottom;
+  const fabRight = fabOffset + insets.right;
+
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer, { paddingHorizontal: horizontalPadding }]}>
         <View style={styles.searchBar}>
           <Ionicons name="search" size={20} color={colors.textSecondary} style={styles.searchIcon} />
           <TextInput
@@ -119,7 +126,7 @@ export default function StudyNotesScreen({ navigation }: StudyNotesScreenProps) 
       </View>
 
       {filteredNotes.length === 0 ? (
-        <View style={styles.emptyContainer}>
+        <View style={[styles.emptyContainer, { paddingBottom: insets.bottom + 32 }]}>
           <Ionicons name="document-text-outline" size={64} color={colors.textSecondary} />
           <Text style={styles.emptyText}>
             {searchQuery ? 'No notes found' : 'No study notes yet'}
@@ -140,12 +147,25 @@ export default function StudyNotesScreen({ navigation }: StudyNotesScreenProps) 
               onDelete={() => handleDelete(item)}
             />
           )}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingHorizontal: horizontalPadding, paddingBottom: listPaddingBottom },
+          ]}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
       <TouchableOpacity
-        style={styles.fab}
+        style={[
+          styles.fab,
+          {
+            right: fabRight,
+            bottom: fabBottom,
+            width: fabSize,
+            height: fabSize,
+            borderRadius: fabSize / 2,
+          },
+        ]}
         onPress={() => navigation.navigate('AddEditNote', { category: 'study' })}
       >
         <Ionicons name="add" size={28} color="#fff" />
@@ -161,7 +181,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    padding: 16,
+    paddingVertical: 12,
     gap: 12,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
@@ -174,7 +194,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 44,
+    minHeight: 44,
   },
   searchIcon: {
     marginRight: 8,
@@ -183,6 +203,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: colors.text,
+    paddingVertical: 10,
   },
   sortButton: {
     flexDirection: 'row',
@@ -190,7 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderRadius: 12,
     paddingHorizontal: 12,
-    height: 44,
+    minHeight: 44,
     gap: 4,
   },
   sortText: {
@@ -199,13 +220,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   listContent: {
-    padding: 16,
+    paddingTop: 12,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
+    paddingHorizontal: 32,
   },
   emptyText: {
     fontSize: 18,
@@ -221,11 +242,6 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    right: 20,
-    bottom: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',

@@ -10,11 +10,13 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { notesService } from '../../services/notesService';
 import { colors } from '../../constants/colors';
+import { horizontalPadding } from '../../constants/layout';
 import { Ionicons } from '@expo/vector-icons';
 import { MainStackParamList } from '../../types';
 
@@ -27,6 +29,7 @@ interface AddEditNoteScreenProps {
 }
 
 export default function AddEditNoteScreen({ route, navigation }: AddEditNoteScreenProps) {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { noteId, category } = route.params || {};
   const [title, setTitle] = useState<string>('');
@@ -94,7 +97,12 @@ export default function AddEditNoteScreen({ route, navigation }: AddEditNoteScre
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingHorizontal: horizontalPadding, paddingBottom: insets.bottom + 24 },
+        ]}
+      >
         <View style={styles.form}>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Title (Optional)</Text>
@@ -129,7 +137,7 @@ export default function AddEditNoteScreen({ route, navigation }: AddEditNoteScre
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { paddingBottom: insets.bottom + 12, paddingHorizontal: horizontalPadding }]}>
         <TouchableOpacity
           style={[styles.cancelButton, loading && styles.buttonDisabled]}
           onPress={() => navigation.goBack()}
@@ -157,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    padding: 20,
+    paddingTop: 16,
   },
   form: {
     flex: 1,
@@ -207,7 +215,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    padding: 20,
+    paddingTop: 12,
     gap: 12,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
